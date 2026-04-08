@@ -81,13 +81,31 @@ class _AddTaskViewState extends State<AddTaskView> {
             ),
             const SizedBox(height: 16),
             TextField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Descrição',
-                border: OutlineInputBorder(),
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Descrição',
+                  border: OutlineInputBorder(),
+                  counterText: '',
+                ),
+                maxLines: 3,
+                maxLength: 500,
               ),
-              maxLines: 3,
-            ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: _descriptionController,
+                  builder: (context, value, _) {
+                    final remaining = 500 - value.text.length;
+                    return Text(
+                      '${value.text.length}/500',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: remaining < 50 ? Colors.red : Colors.grey,
+                      ),
+                    );
+                  },
+                ),
+              ),
             const SizedBox(height: 16),
             ListTile(
               shape: RoundedRectangleBorder(

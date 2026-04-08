@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/task_controller.dart';
+import '../controllers/tag_controller.dart';
+import '../models/tag_model.dart';
 
 class AddTaskView extends StatefulWidget {
   const AddTaskView({super.key});
@@ -13,6 +15,14 @@ class _AddTaskViewState extends State<AddTaskView> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   DateTime? _deadline;
+  List<Tag> _selectedTags = [];
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() =>
+        Provider.of<TagController>(context, listen: false).findAll());
+  }
 
   @override
   void dispose() {
@@ -44,9 +54,14 @@ class _AddTaskViewState extends State<AddTaskView> {
     }
   }
 
+  Color _hexToColor(String hex) {
+    return Color(int.parse(hex.replaceAll('#', '0xFF')));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<TaskController>(context, listen: false);
+    final taskController = Provider.of<TaskController>(context, listen: false);
+    final tagController = Provider.of<TagController>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,6 +70,7 @@ class _AddTaskViewState extends State<AddTaskView> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               controller: _titleController,
@@ -69,8 +85,26 @@ class _AddTaskViewState extends State<AddTaskView> {
               decoration: const InputDecoration(
                 labelText: 'Descrição',
                 border: OutlineInputBorder(),
+                counterText: '',
               ),
               maxLines: 3,
+              maxLength: 500,
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ValueListenableBuilder<TextEditingValue>(
+                valueListenable: _descriptionController,
+                builder: (context, value, _) {
+                  final remaining = 500 - value.text.length;
+                  return Text(
+                    '${value.text.length}/500',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: remaining < 50 ? Colors.red : Colors.grey,
+                    ),
+                  );
+                },
+              ),
             ),
             const SizedBox(height: 16),
             ListTile(
@@ -92,16 +126,41 @@ class _AddTaskViewState extends State<AddTaskView> {
                     )
                   : null,
             ),
+            const SizedBox(height: 16),
+            const Text('Tags:'),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: tagController.tags.map((tag) {
+                final isSelected = _selectedTags.any((t) => t.id == tag.id);
+                return FilterChip(
+                  label: Text(tag.name),
+                  selected: isSelected,
+                  backgroundColor: _hexToColor(tag.color).withOpacity(0.3),
+                  selectedColor: _hexToColor(tag.color).withOpacity(0.7),
+                  onSelected: (selected) {
+                    setState(() {
+                      if (selected) {
+                        _selectedTags.add(tag);
+                      } else {
+                        _selectedTags.removeWhere((t) => t.id == tag.id);
+                      }
+                    });
+                  },
+                );
+              }).toList(),
+            ),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
                   if (_titleController.text.isEmpty) return;
-                  await controller.create(
+                  await taskController.create(
                     _titleController.text,
                     _descriptionController.text,
                     _deadline?.toIso8601String(),
+                    _selectedTags,
                   );
                   if (context.mounted) Navigator.pop(context);
                 },

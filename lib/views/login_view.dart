@@ -28,14 +28,14 @@ class _LoginViewState extends State<LoginView> {
     final controller = Provider.of<AuthController>(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1B3A6B),
+      backgroundColor: const Color(0xFF0F3473),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/logo.png', width: 200),
+              Image.asset('assets/images/logo.png', width: 800),
               const SizedBox(height: 40),
               TextField(
                 controller: _emailController,
