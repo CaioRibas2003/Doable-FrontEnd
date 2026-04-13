@@ -35,7 +35,14 @@ class _LoginViewState extends State<LoginView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/logo.png', width: 800),
+              SizedBox(
+                width: 400,
+                height: 400,
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
               const SizedBox(height: 40),
               TextField(
                 controller: _emailController,
