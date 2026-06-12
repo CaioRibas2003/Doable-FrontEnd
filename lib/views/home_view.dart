@@ -7,6 +7,8 @@ import '../widgets/task_tile.dart';
 import 'add_task_view.dart';
 import 'login_view.dart';
 import 'manage_tags_view.dart';
+import 'stats_view.dart';
+import 'goals_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -40,7 +42,24 @@ class _HomeViewState extends State<HomeView> {
         title: const Text('Doable'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.bar_chart),
+            tooltip: 'Estatísticas',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const StatsView()),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.flag_outlined),
+            tooltip: 'Metas',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const GoalsView()),
+            ),
+          ),
+          IconButton(
             icon: const Icon(Icons.label),
+            tooltip: 'Tags',
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const ManageTagsView()),
@@ -49,7 +68,8 @@ class _HomeViewState extends State<HomeView> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
-              await Provider.of<AuthController>(context, listen: false).logout();
+              await Provider.of<AuthController>(context, listen: false)
+                  .logout();
               if (context.mounted) {
                 Navigator.pushReplacement(
                   context,
@@ -136,8 +156,8 @@ class _HomeViewState extends State<HomeView> {
                           ...tagController.tags.map((tag) {
                             final isSelected = controller.selectedTagFilter
                                 .any((t) => t.id == tag.id);
-                            final color = Color(
-                                int.parse(tag.color.replaceAll('#', '0xFF')));
+                            final color = Color(int.parse(
+                                tag.color.replaceAll('#', '0xFF')));
                             return Padding(
                               padding: const EdgeInsets.only(right: 4),
                               child: FilterChip(
@@ -158,7 +178,8 @@ class _HomeViewState extends State<HomeView> {
               ),
               Expanded(
                 child: controller.tasks.isEmpty
-                    ? const Center(child: Text('Nenhuma tarefa encontrada!'))
+                    ? const Center(
+                        child: Text('Nenhuma tarefa encontrada!'))
                     : ListView.builder(
                         itemCount: controller.tasks.length,
                         itemBuilder: (context, index) {

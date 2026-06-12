@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'controllers/task_controller.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/tag_controller.dart';
+import 'controllers/stats_controller.dart';
+import 'controllers/goal_controller.dart';
 import 'views/splash_view.dart';
 
 void main() {
@@ -19,6 +21,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthController()),
         ChangeNotifierProvider(create: (_) => TaskController()),
         ChangeNotifierProvider(create: (_) => TagController()),
+        ChangeNotifierProvider(create: (_) => StatsController()),
+        ChangeNotifierProvider(create: (_) => GoalController()),
       ],
       child: MaterialApp(
         title: 'Doable',
